@@ -11,7 +11,8 @@ namespace GenericHandler
 
             var router = new Router();
 
-            router.Register(new ZonMessageHandler(zon));
+            ZonMessageHandler zonMessageHandler = new ZonMessageHandler(zon);
+            router.Register(zonMessageHandler);
             router.Register(new RegenMessageHandler(regen));
 
             var regenmessage = new RegenMessage(5.3);
@@ -21,6 +22,10 @@ namespace GenericHandler
             router.Dispatch(zonmessage);
 
             router.Register(new ZonMessageHandler(zon));
+
+            router.Dispatch(zonmessage);
+
+            router.Unregister(zonMessageHandler);
 
             zonmessage = new ZonMessage(5);
             router.Dispatch(zonmessage);

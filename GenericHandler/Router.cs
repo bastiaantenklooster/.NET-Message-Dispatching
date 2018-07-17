@@ -27,6 +27,15 @@ namespace GenericHandler
                 .Add(messageHandler);
         }
 
+        public void Unregister<TMessage>(IMessageHandler<TMessage> messageHandler) where TMessage : Message
+        {
+            if (!handlers.ContainsKey(typeof(TMessage)))
+                return;
+
+            ((List<IMessageHandler<TMessage>>)handlers.GetValueOrDefault(typeof(TMessage)))
+                .Remove(messageHandler);
+        }
+
         /// <summary>
         /// Invoke the <see cref="IMessageHandler{TMessage}.Handle(TMessage)"/> method for 
         /// all registered message handlers of the message's type
@@ -40,7 +49,10 @@ namespace GenericHandler
             if (list == null) // No handlers have been registered yet for this type
                 return;
 
-            foreach (object i in list)
+            object[] tempList = new object[list.Count];
+            list.CopyTo(tempList, 0);
+
+            foreach (object i in tempList)
                 i.GetType().GetMethod("Handle").Invoke(i, new[] { message });
         }
     }
